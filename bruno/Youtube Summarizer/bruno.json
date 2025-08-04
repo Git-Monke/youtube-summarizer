@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Youtube Summarizer",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

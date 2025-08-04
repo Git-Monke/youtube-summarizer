@@ -1,0 +1,8 @@
+- Introduces Basero as a platform for building custom tools and workflows.  
+- Starts with structured data in a flexible database.  
+- Builds fully visual applications without requiring code.  
+- Manages tasks through connected views and dashboards.  
+- Tracks assets in real time, from data to reporting.  
+- Collects feedback and converts it into insights.  
+- Creates client portals tailored to specific data.  
+- Integrates databases, applications, dashboards, AI, and automations into one platform.
