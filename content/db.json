@@ -1,15 +1,1 @@
-{
-  "videos": {
-    "1": {
-      "title": "The All-in-One No-Code Database to Power Any Workflow",
-      "duration": 7.388651132583618,
-      "uploader": "Baserow",
-      "upload_date": "20250801",
-      "thumbnail_url": "https://i.ytimg.com/vi_webp/EQ5mAHUgK6g/maxresdefault.webp",
-      "webpage_url": "https://www.youtube.com/watch?v=EQ5mAHUgK6g",
-      "video_id": "EQ5mAHUgK6g",
-      "status": "done",
-      "transcript_filepath": "/Users/jacobvelasquez/projects/youtube-summarizer/content/transcriptions/EQ5mAHUgK6g.txt"
-    }
-  }
-}
+{"videos": {"1": {"title": "The All-in-One No-Code Database to Power Any Workflow", "duration": 7.4345862865448, "uploader": "Baserow", "upload_date": "20250801", "thumbnail_url": "https://i.ytimg.com/vi_webp/EQ5mAHUgK6g/maxresdefault.webp", "webpage_url": "https://www.youtube.com/watch?v=EQ5mAHUgK6g", "video_id": "EQ5mAHUgK6g", "status": "done", "transcript_filepath": "/Users/jacobvelasquez/projects/youtube-summarizer/content/transcriptions/EQ5mAHUgK6g.txt"}, "2": {"title": "Asyncio in Python - Full Tutorial", "duration": 595.284969329834, "uploader": "Tech With Tim", "upload_date": "20240405", "thumbnail_url": "https://i.ytimg.com/vi/Qb9s3UiMSTA/maxresdefault.jpg", "webpage_url": "https://www.youtube.com/watch?v=Qb9s3UiMSTA", "video_id": "Qb9s3UiMSTA", "status": "done", "transcript_filepath": "/Users/jacobvelasquez/projects/youtube-summarizer/content/transcriptions/Qb9s3UiMSTA.txt"}, "3": {"title": "Nvidia CUDA in 100 Seconds", "duration": 61.00438404083252, "uploader": "Fireship", "upload_date": "20240307", "thumbnail_url": "https://i.ytimg.com/vi_webp/pPStdjuYzSI/maxresdefault.webp", "webpage_url": "https://www.youtube.com/watch?v=pPStdjuYzSI", "video_id": "pPStdjuYzSI", "status": "done", "transcript_filepath": "/Users/jacobvelasquez/projects/youtube-summarizer/content/transcriptions/pPStdjuYzSI.txt"}}}

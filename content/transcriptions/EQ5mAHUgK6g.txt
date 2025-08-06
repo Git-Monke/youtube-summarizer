@@ -1,9 +1,0 @@
-Basero brings everything you need to build custom tools and workflows in one place.
-Start with structured data in a flexible database, then build fully visual applications, no code required.
-Manage tasks with connected views and dashboards.
-Track assets in real time, from data to reporting.
-Collect feedback and turn it into insights.
-Or create client portals tailored to your data.
-With databases, applications, dashboards, AI, and automations, all under one platform, you stay in control from start to scale.
-Get started at basero.
-io today.

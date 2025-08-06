@@ -1,10 +1,12 @@
 from .config import MAX_TOKENS, TRANS_DIR, SUMMARIES_DIR, DEFAULT_OLLAMA_MODEL
 from .logs import logger
 from .utils import safe_open_write
+from .jobs import get_job
 
 from ollama import chat, ChatResponse
 import time
 import re
+import asyncio
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -24,12 +26,16 @@ Instructions:
 - Do not include: introductions, conclusions, opinions, transitions, or redundant phrasing
 - The summary must be standalone and compatible with others when combined
 
-Your output should be a clean, information-dense bullet list summarizing just this chunk.
+Your output should be a clean, information-dense bullet list using markdown summarizing just this chunk.
 """
 
 
 async def summarize_transcript(video_id):
+    job = get_job(video_id)
     logger.info(f"Beggining summary of ${video_id}")
+
+    # Update job status to summarizing
+    await job.update_status("summarizing", "Starting video summarization")
 
     with open(f"{TRANS_DIR}/{video_id}.txt", "r") as f:
         full_transcript = f.read()
@@ -38,7 +44,7 @@ async def summarize_transcript(video_id):
         chunk_size=MAX_TOKENS / 2, chunk_overlap=10
     )
 
-    summary_path = SUMMARIES_DIR / f"{video_id}.txt"
+    summary_path = SUMMARIES_DIR / f"{video_id}.md"
     chunks = splitter.split_text(full_transcript)
 
     logger.info(f"Found {len(chunks)} chunks.")
@@ -65,7 +71,18 @@ async def summarize_transcript(video_id):
             )
 
             for word in stream:
-                chunk_summary += word["message"]["content"]
+                word_content = word["message"]["content"]
+                chunk_summary += word_content
+
+                # Add to summary buffer and broadcast each word/token
+                await job.broadcast_data(
+                    "summary_chunk",
+                    {"content": word_content, "chunk": i},
+                    state_updates={
+                        "summary_buffer": job.job_state["summary_buffer"] + word_content
+                    },
+                    sleep_duration=0.001,  # Yield control frequently for streaming
+                )
 
             # If this is a thinking model, do not include the thoughts in the summary...
             chunk_summary = re.sub(
@@ -75,3 +92,6 @@ async def summarize_transcript(video_id):
             f.write(chunk_summary)
             end = time.perf_counter()
             logger.info(f"[Chunk {i}] finished in {end - start:.2f}s")
+
+    # Update job status to summarized
+    await job.update_status("summarized", "Video summarization completed")

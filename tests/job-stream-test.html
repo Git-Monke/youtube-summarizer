@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Summarizer Job Stream Test</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .form-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        margin-bottom: 30px;
+      }
+
+      .form-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      input[type="url"] {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+      }
+
+      input[type="url"]:focus {
+        outline: none;
+        border-color: #007bff;
+      }
+
+      button {
+        padding: 12px 24px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      button:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+      }
+
+      .status-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .status-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        border-left: 4px solid #007bff;
+      }
+
+      .status-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .status-value {
+        font-size: 18px;
+        color: #007bff;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: #28a745;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .content-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .content-box {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 20px;
+        height: 300px;
+        overflow-y: auto;
+      }
+
+      .content-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      .event-log {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 20px;
+        height: 400px;
+        overflow-y: auto;
+      }
+
+      .event-item {
+        background: white;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        border-left: 3px solid #007bff;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 13px;
+      }
+
+      .event-timestamp {
+        color: #6c757d;
+        font-size: 11px;
+      }
+
+      .event-type {
+        font-weight: bold;
+        color: #007bff;
+      }
+
+      .event-error {
+        border-left-color: #dc3545;
+      }
+
+      .event-error .event-type {
+        color: #dc3545;
+      }
+
+      .transcript-segment {
+        background: white;
+        margin-bottom: 8px;
+        padding: 8px;
+        border-radius: 4px;
+        border-left: 3px solid #28a745;
+      }
+
+      .segment-time {
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: bold;
+      }
+
+      .segment-text {
+        margin-top: 5px;
+      }
+
+      .summary-chunk {
+        margin-bottom: 5px;
+        line-height: 1.4;
+      }
+
+      .status-starting {
+        color: #6c757d;
+      }
+      .status-downloading {
+        color: #007bff;
+      }
+      .status-transcribing {
+        color: #fd7e14;
+      }
+      .status-summarizing {
+        color: #6f42c1;
+      }
+      .status-success {
+        color: #28a745;
+      }
+      .status-error {
+        color: #dc3545;
+      }
+
+      .connection-status {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .connection-connected {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .connection-disconnected {
+        background: #f8d7da;
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>YouTube Summarizer Job Stream Test</h1>
+
+      <div class="form-section">
+        <div class="form-group">
+          <input
+            type="url"
+            id="videoUrl"
+            placeholder="Enter YouTube URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)"
+            value="https://www.youtube.com/watch?v=EQ5mAHUgK6g"
+          />
+          <button id="startBtn" onclick="startProcessing()">
+            Start Processing
+          </button>
+        </div>
+      </div>
+
+      <div class="status-section">
+        <div class="status-card">
+          <div class="status-title">Current Status</div>
+          <div class="status-value" id="currentStatus">Ready</div>
+        </div>
+        <div class="status-card">
+          <div class="status-title">Download Progress</div>
+          <div class="status-value" id="downloadProgress">0%</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="content-box">
+          <div class="content-title">Live Transcript</div>
+          <div id="transcriptContent"></div>
+        </div>
+        <div class="content-box">
+          <div class="content-title">Live Summary</div>
+          <div id="summaryContent"></div>
+        </div>
+      </div>
+
+      <div class="event-log">
+        <div class="content-title">Event Log</div>
+        <div id="eventLog"></div>
+      </div>
+    </div>
+
+    <div
+      id="connectionStatus"
+      class="connection-status connection-disconnected"
+    >
+      Disconnected
+    </div>
+
+    <script>
+      let eventSource = null;
+      let currentVideoId = null;
+
+      function logEvent(type, data, isError = false) {
+        const eventLog = document.getElementById("eventLog");
+        const timestamp = new Date().toLocaleTimeString();
+
+        const eventItem = document.createElement("div");
+        eventItem.className = `event-item ${isError ? "event-error" : ""}`;
+        eventItem.innerHTML = `
+                <div class="event-timestamp">${timestamp}</div>
+                <div class="event-type">${type}</div>
+                <div>${JSON.stringify(data, null, 2)}</div>
+            `;
+
+        eventLog.insertBefore(eventItem, eventLog.firstChild);
+      }
+
+      function updateStatus(status) {
+        const statusEl = document.getElementById("currentStatus");
+        statusEl.textContent = status;
+        statusEl.className = `status-value status-${status.toLowerCase()}`;
+      }
+
+      function updateProgress(progress) {
+        document.getElementById(
+          "downloadProgress"
+        ).textContent = `${progress}%`;
+        document.getElementById("progressFill").style.width = `${progress}%`;
+      }
+
+      function addTranscriptSegment(segment) {
+        const transcriptContent = document.getElementById("transcriptContent");
+        const segmentDiv = document.createElement("div");
+        segmentDiv.className = "transcript-segment";
+        segmentDiv.innerHTML = `
+                <div class="segment-time">[${segment.start.toFixed(
+                  1
+                )}s - ${segment.end.toFixed(1)}s]</div>
+                <div class="segment-text">${segment.text}</div>
+            `;
+        transcriptContent.appendChild(segmentDiv);
+        transcriptContent.scrollTop = transcriptContent.scrollHeight;
+      }
+
+      function addSummaryChunk(content) {
+        const summaryContent = document.getElementById("summaryContent");
+        const chunkSpan = document.createElement("span");
+        chunkSpan.className = "summary-chunk";
+        chunkSpan.textContent = content;
+        summaryContent.appendChild(chunkSpan);
+        summaryContent.scrollTop = summaryContent.scrollHeight;
+      }
+
+      function updateConnectionStatus(connected) {
+        const statusEl = document.getElementById("connectionStatus");
+        statusEl.textContent = connected ? "Connected" : "Disconnected";
+        statusEl.className = `connection-status ${
+          connected ? "connection-connected" : "connection-disconnected"
+        }`;
+      }
+
+      async function startProcessing() {
+        const urlInput = document.getElementById("videoUrl");
+        const startBtn = document.getElementById("startBtn");
+        const url = urlInput.value.trim();
+
+        if (!url) {
+          alert("Please enter a YouTube URL");
+          return;
+        }
+
+        startBtn.disabled = true;
+        startBtn.textContent = "Processing...";
+
+        // Clear previous content
+        document.getElementById("transcriptContent").innerHTML = "";
+        document.getElementById("summaryContent").innerHTML = "";
+        document.getElementById("eventLog").innerHTML =
+          '<div class="content-title">Event Log</div>';
+
+        try {
+          // Start the summarization process
+          const response = await fetch("http://localhost:8008/api/summarize", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ url: url }),
+          });
+
+          const result = await response.json();
+
+          if (result.error) {
+            logEvent("Error", result, true);
+            updateStatus("error");
+            return;
+          }
+
+          currentVideoId = result.video_id;
+          logEvent("Job Created", result);
+
+          // Connect to the event stream
+          connectToStream(currentVideoId);
+        } catch (error) {
+          logEvent("Network Error", { error: error.message }, true);
+          updateStatus("error");
+        } finally {
+          startBtn.disabled = false;
+          startBtn.textContent = "Start Processing";
+        }
+      }
+
+      function connectToStream(videoId) {
+        if (eventSource) {
+          eventSource.close();
+        }
+
+        const streamUrl = `http://localhost:8008/api/summarize/${videoId}/subscribe`;
+        eventSource = new EventSource(streamUrl);
+
+        eventSource.onopen = function (event) {
+          updateConnectionStatus(true);
+          logEvent("Stream Connected", { videoId: videoId });
+        };
+
+        eventSource.onmessage = function (event) {
+          try {
+            const data = JSON.parse(event.data);
+            logEvent("Initial State", data);
+
+            // Update UI with initial state
+            if (data.status) updateStatus(data.status);
+            if (data.download_progress) updateProgress(data.download_progress);
+          } catch (error) {
+            logEvent(
+              "Parse Error",
+              { error: error.message, data: event.data },
+              true
+            );
+          }
+        };
+
+        eventSource.addEventListener("update", function (event) {
+          try {
+            const update = JSON.parse(event.data);
+            logEvent("Update", update);
+
+            switch (update.type) {
+              case "status_update":
+                updateStatus(update.data.status);
+                break;
+
+              case "download_progress":
+                updateProgress(update.data.progress);
+                break;
+
+              case "transcript_segment":
+                addTranscriptSegment(update.data);
+                break;
+
+              case "summary_chunk":
+                addSummaryChunk(update.data.content);
+                break;
+
+              case "error":
+                logEvent("Processing Error", update.data, true);
+                updateStatus("error");
+                break;
+            }
+          } catch (error) {
+            logEvent(
+              "Parse Error",
+              { error: error.message, data: event.data },
+              true
+            );
+          }
+        });
+
+        eventSource.onerror = function (event) {
+          updateConnectionStatus(false);
+          logEvent(
+            "Stream Error",
+            { readyState: eventSource.readyState },
+            true
+          );
+
+          if (eventSource.readyState === EventSource.CLOSED) {
+            logEvent("Stream Closed", {});
+          }
+        };
+      }
+
+      // Allow Enter key to submit
+      document
+        .getElementById("videoUrl")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            startProcessing();
+          }
+        });
+
+      // Clean up on page unload
+      window.addEventListener("beforeunload", function () {
+        if (eventSource) {
+          eventSource.close();
+        }
+      });
+    </script>
+  </body>
+</html>
