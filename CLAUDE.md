@@ -17,3 +17,8 @@
 
 - Backend: Python with FastAPI
 - Frontend: Svelte + Tailwind + Vite
+- UI Component Library: shadcn ui
+
+## State Management
+
+- This project is using jotai for state management. Don't create atoms until they're needed.

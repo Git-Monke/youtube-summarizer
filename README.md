@@ -1,6 +1,6 @@
 # YouTube Summarizer
 
-A full-stack web application that automatically downloads, transcribes, and summarizes YouTube videos using advanced AI models.
+A full-stack web application that automatically downloads, transcribes, and summarizes YouTube videos using various AI models.
 
 ## Architecture Overview
 

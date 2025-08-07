@@ -1,0 +1,21 @@
+meta {
+  name: Summarize Medium Video
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://localhost:8008/api/summarize
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "url": "https://www.youtube.com/watch?v=rLXcLBfDwvE"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
