@@ -18,7 +18,7 @@ from .logs import logger
 
 from .utils import get_file_path
 from .database import videos
-from .jobs import get_job
+from .summaryjobs import get_job
 
 # Use cuda by default, cpu otherwise
 device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"

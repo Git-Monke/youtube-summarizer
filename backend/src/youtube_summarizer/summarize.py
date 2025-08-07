@@ -13,7 +13,7 @@ from .config import (
 )
 from .logs import logger
 from .utils import safe_open_write
-from .jobs import get_job
+from .summaryjobs import get_job
 
 from ollama import chat, ChatResponse
 from openai import OpenAI

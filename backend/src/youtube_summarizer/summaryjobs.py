@@ -3,7 +3,7 @@ import uuid
 import json
 
 
-class Job:
+class SummaryJob:
     def __init__(self, video_id: str):
         self.clients: dict[str, asyncio.Queue] = {}
         self.job_state = {
@@ -56,11 +56,11 @@ class Job:
         await asyncio.sleep(0.01)
 
 
-jobs: dict[str, Job] = {}
+jobs: dict[str, SummaryJob] = {}
 
 
 def create_job(video_id: str):
-    new_job = Job(video_id)
+    new_job = SummaryJob(video_id)
     jobs[video_id] = new_job
     return new_job
 

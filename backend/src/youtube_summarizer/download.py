@@ -5,7 +5,7 @@ from tinydb import Query
 from .utils import get_file_path
 from .database import videos
 from .logs import logger
-from .jobs import get_job
+from .summaryjobs import get_job
 
 from queue import Queue, Empty
 import threading

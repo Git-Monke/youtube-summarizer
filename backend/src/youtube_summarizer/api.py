@@ -1,7 +1,7 @@
 from .download import download_video_audio
 from .scribe import transcribe_audio
 from .summarize import summarize_transcript
-from .jobs import get_job, create_job, close_job
+from .summaryjobs import get_job, create_job, close_job
 
 from .utils import extract_url_id
 
