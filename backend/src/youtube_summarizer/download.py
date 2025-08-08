@@ -105,7 +105,7 @@ def youtube_dl(queue, video_id):
 
     # Set up initial ops
     opts = {
-        "format": "bestaudio",
+        "format": "bestaudio/best",
         "outtmpl": f"{path}.%(ext)s",
         "postprocessors": [
             {

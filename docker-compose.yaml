@@ -1,0 +1,26 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: youtube-summarizer-frontend
+    ports: ["8009:80"]
+    depends_on: [backend]
+    networks: [appnet]
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: youtube-summarizer-backend
+    volumes:
+      - backend-content:/app/content
+    ports: ["8008:8008"]
+    networks: [appnet]
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  backend-content:
