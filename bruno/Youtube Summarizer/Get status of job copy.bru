@@ -1,0 +1,15 @@
+meta {
+  name: Get status of job copy
+  type: http
+  seq: 10
+}
+
+get {
+  url: http://localhost:8008/api/summary/fXyRprdoEoE/status
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -10,6 +10,7 @@ STATIC_DIR = BASE_DIR / "static"
 TRANS_DIR = CONTENT_DIR / "transcriptions"
 DOWNLOAD_DIR = CONTENT_DIR / "downloads"
 SUMMARIES_DIR = CONTENT_DIR / "summaries"
+CHAT_DIR = CONTENT_DIR / "chats"
 DB_DIR = CONTENT_DIR / "db.json"
 
 # Import configuration manager for dynamic config

@@ -2,6 +2,8 @@ from .download import download_video_audio
 from .scribe import transcribe_audio
 from .summarize import summarize_transcript
 from .summaryjobs import get_job, create_job, close_job
+from .chatjobs import get_chat_job, create_chat_job, close_chat_job
+from .chat import load_chat_history, ask_question
 
 from .utils import extract_url_id
 
@@ -298,3 +300,79 @@ async def summarize_video(video_id: str):
         )
 
     await close_job(video_id)
+
+
+# Chat endpoints
+@app.get("/api/chat/{video_id}")
+async def get_chat_history(video_id: str):
+    """Get chat history for a video."""
+    try:
+        chat_history = load_chat_history(video_id)
+        return {"messages": chat_history}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load chat history: {str(e)}")
+
+
+@app.post("/api/chat/{video_id}/ask")
+async def ask_chat_question(video_id: str, request: Request):
+    """Ask a question about a video and start streaming response."""
+    try:
+        data = await request.json()
+        question = data.get("question", "").strip()
+        
+        if not question:
+            raise HTTPException(status_code=400, detail="Question is required")
+        
+        # Create or get existing chat job
+        chat_job = create_chat_job(video_id)
+        
+        # Start processing question in background
+        asyncio.create_task(ask_question(video_id, question))
+        
+        return {"success": True, "message": "Question received, response streaming"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process question: {str(e)}")
+
+
+@app.get("/api/chat/{video_id}/subscribe")
+async def subscribe_to_chat(video_id: str):
+    """Subscribe to chat responses via Server-Sent Events."""
+    chat_job = get_chat_job(video_id)
+    
+    if not chat_job:
+        # Create chat job if it doesn't exist to allow subscription
+        chat_job = create_chat_job(video_id)
+    
+    client_id, q = chat_job.add_client()
+    
+    async def event_stream():
+        # Send current state
+        yield f"data: {chat_job.get_state()}\n\n"
+        
+        while True:
+            try:
+                data = await q.get()
+                
+                if data == "close":
+                    yield 'event: close\ndata: {"message": "Stream closed by server"}\n\n'
+                    break
+                
+                # Handle special control messages
+                if isinstance(data, str):
+                    if data == "__RESPONSE_COMPLETE__":
+                        yield 'event: complete\ndata: {"type": "response_complete"}\n\n'
+                        continue
+                    elif data.startswith("__ERROR__:"):
+                        error_msg = data.replace("__ERROR__:", "")
+                        yield f'event: error\ndata: {{"error": "{error_msg}"}}\n\n'
+                        continue
+                
+                # Regular streaming tokens
+                yield f"event: token\ndata: {json.dumps(data)}\n\n"
+                
+            except asyncio.CancelledError:
+                chat_job.remove_client(client_id)
+                raise
+    
+    return StreamingResponse(event_stream(), media_type="text/event-stream")

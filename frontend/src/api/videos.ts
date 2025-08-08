@@ -45,6 +45,25 @@ export interface UploadErrorResponse {
   error: string
 }
 
+// Chat interfaces
+export interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export interface ChatHistoryResponse {
+  messages: ChatMessage[]
+}
+
+export interface ChatQuestionRequest {
+  question: string
+}
+
+export interface ChatQuestionResponse {
+  success: boolean
+  message: string
+}
+
 // Fetch all videos
 export async function fetchVideos(): Promise<Video[]> {
   try {
@@ -165,4 +184,48 @@ export async function uploadVideo(url: string): Promise<string> {
     console.error('Error uploading video:', error)
     throw error
   }
+}
+
+// Chat functions
+export async function fetchChatHistory(videoId: string): Promise<ChatMessage[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/chat/${videoId}`)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch chat history: ${response.statusText}`)
+    }
+    const data: ChatHistoryResponse = await response.json()
+    return data.messages
+  } catch (error) {
+    console.error('Error fetching chat history:', error)
+    throw error
+  }
+}
+
+export async function askChatQuestion(videoId: string, question: string): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/chat/${videoId}/ask`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ question })
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to ask question: ${response.statusText}`)
+    }
+    
+    const data: ChatQuestionResponse = await response.json()
+    if (!data.success) {
+      throw new Error(data.message || 'Failed to ask question')
+    }
+  } catch (error) {
+    console.error('Error asking chat question:', error)
+    throw error
+  }
+}
+
+export function subscribeToChatStream(videoId: string): EventSource {
+  const eventSource = new EventSource(`${API_BASE_URL}/api/chat/${videoId}/subscribe`)
+  return eventSource
 }

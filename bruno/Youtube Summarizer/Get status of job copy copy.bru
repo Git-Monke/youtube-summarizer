@@ -1,0 +1,21 @@
+meta {
+  name: Get status of job copy copy
+  type: http
+  seq: 11
+}
+
+get {
+  url: http://localhost:8008/api/chat/UcRaVwl5qBw/1/ask
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "question": "Hello! Can you write a bunch of text for testing purposes"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

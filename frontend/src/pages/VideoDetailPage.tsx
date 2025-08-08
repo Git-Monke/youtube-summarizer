@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { AlertCircle, Loader2, ArrowLeft, MoreVertical, Trash2, FileText, MessageSquare, Send } from 'lucide-react'
+import { AlertCircle, Loader2, ArrowLeft, MoreVertical, Trash2, FileText, MessageSquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useSSEJobStatus } from '../hooks/useSSEJobStatus'
 import { ProcessingView } from '../components/ProcessingView'
 import { VideoHeader } from '../components/VideoHeader'
 import { SummaryDisplay } from '../components/SummaryDisplay'
 import { TranscriptDisplay } from '../components/TranscriptDisplay'
+import { ChatDisplay } from '../components/ChatDisplay'
 import { deleteVideo } from '../api/videos'
 import { Button } from '../components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
@@ -240,37 +241,9 @@ export function VideoDetailPage() {
             </Tabs>
           </div>
 
-          {/* Right Column - Chat Interface Placeholder */}
-          <div className="flex flex-col h-[80vh] bg-card rounded-lg border border-border">
-            <div className="flex items-center gap-2 p-4 border-b border-border">
-              <MessageSquare className="h-5 w-5 text-muted-foreground" />
-              <h3 className="font-semibold text-foreground">Video Chat</h3>
-              <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-md ml-auto">Coming Soon</span>
-            </div>
-            
-            {/* Messages Area */}
-            <div className="flex-1 p-4 overflow-auto">
-              <div className="text-center text-muted-foreground py-8">
-                <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-sm">Chat with the video content</p>
-                <p className="text-xs mt-1">Ask questions about the summary and transcript</p>
-              </div>
-            </div>
-
-            {/* Input Area */}
-            <div className="p-4 border-t border-border">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Ask about this video..."
-                  disabled
-                  className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-                <Button size="sm" disabled>
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+          {/* Right Column - Chat Interface */}
+          <div className="h-[80vh]">
+            <ChatDisplay videoId={videoId!} />
           </div>
         </div>
       ) : (
