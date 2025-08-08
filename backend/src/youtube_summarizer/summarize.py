@@ -64,7 +64,7 @@ You will receive timestamped sentences in the format:
 - Repetitive explanations of the same concept
 
 ### Structure Example
-```markdown
+
 ## Summary
 Brief overview of the main topic and key takeaways.
 
@@ -77,9 +77,9 @@ Key information with timestamps ([MM:SS])
 
 ## Main Topic/Section 2
 Continue structuring content logically...
-```
 
-Remember: Your goal is to create a comprehensive reference document in markdown that captures all valuable information while being concise and well-organized. Every important claim should be verifiable through its timestamp.
+Remember: Your goal is to create a comprehensive reference document in markdown that captures all valuable information while being concise and well-organized. Every important claim should be verifiable through its timestamp
+ONLY Cite timestamps in [H:MM:SS] or [MM:SS] format. DO NOT use [MM:SS-MM:SS] format. You CAN use [MM:SS]-[MM-SS] format.
 """
 
 

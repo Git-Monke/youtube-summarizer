@@ -1,5 +1,5 @@
 :80 {
-    root * /usr/share/caddy
+    root * ./frontend/dist 
     try_files {path} /index.html
     file_server
     header Cache-Control "public, max-age=31536000, immutable"
