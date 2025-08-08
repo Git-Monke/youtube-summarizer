@@ -1,17 +1,13 @@
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: gitmonke/youtube-summarizer-frontend:latest
     container_name: youtube-summarizer-frontend
     ports: ["8009:80"]
     depends_on: [backend]
     networks: [appnet]
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: gitmonke/youtube-summarizer-backend:latest
     container_name: youtube-summarizer-backend
     volumes:
       - backend-content:/app/content
