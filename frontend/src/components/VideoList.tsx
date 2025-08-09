@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Video, Clock, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import { videosAtom, videosLoadingAtom, videosErrorAtom, loadVideosAtom, ensureVideoPollingAtom } from '../store/videos'
 import { cn } from '../lib/utils'
+import {useSidebar} from './ui/sidebar.tsx'
 
 const statusIcons = {
   done: <CheckCircle2 className="h-3 w-3 text-green-500" />,
@@ -19,6 +20,7 @@ export function VideoList() {
   const [, loadVideos] = useAtom(loadVideosAtom)
   const [, ensureVideoPolling] = useAtom(ensureVideoPollingAtom)
   const navigate = useNavigate()
+  const { setOpenMobile } = useSidebar()
 
   useEffect(() => {
     loadVideos() // Initial load
@@ -27,6 +29,7 @@ export function VideoList() {
 
   const handleVideoClick = (videoId: string) => {
     navigate(`/video/${videoId}`)
+    setOpenMobile(false)
   }
 
   if (loading) {
