@@ -32,6 +32,10 @@ const processTimestamps = (content: any): any => {
   return content;
 };
 
+function cleanMarkdown(input) {
+  return input.replace(/```markdown\s*([\s\S]*?)```/g, "$1");
+}
+
 export function SummaryDisplay({ videoId }: SummaryDisplayProps) {
   const [summary, setSummary] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -44,7 +48,7 @@ export function SummaryDisplay({ videoId }: SummaryDisplayProps) {
 
       try {
         const summaryContent = await fetchSummary(videoId)
-        setSummary(summaryContent)
+        setSummary(cleanMarkdown(summaryContent))
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load summary')
       } finally {

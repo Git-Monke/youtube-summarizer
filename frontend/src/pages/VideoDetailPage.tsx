@@ -218,7 +218,7 @@ export function VideoDetailPage() {
       <VideoHeader video={video} />
 
       {jobStatus.status === 'completed' ? (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 h-[80vh]">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:h-[80vh]">
           {/* Left Column - Summary/Transcript Tabs */}
           <div className="h-full flex flex-col min-h-0">
             <Tabs defaultValue="summary" className="h-full flex flex-col min-h-0">
@@ -242,7 +242,7 @@ export function VideoDetailPage() {
           </div>
 
           {/* Right Column - Chat Interface */}
-          <div className="h-[80vh]">
+          <div className="h-full min-h-0">
             <ChatDisplay videoId={videoId!} />
           </div>
         </div>

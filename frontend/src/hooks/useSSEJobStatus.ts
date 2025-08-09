@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { type JobStatus, type Video, fetchJobStatus } from '../api/videos'
+import { getApiBaseUrl } from '../config/api'
 
 interface SSEEvent {
   type: string
@@ -51,7 +52,7 @@ export function useSSEJobStatus(videoId: string | undefined): UseSSEJobStatusRet
     setConnectionStatus('connecting')
     setError(null)
 
-    const eventSource = new EventSource(`http://localhost:8008/api/summarize/${videoId}/subscribe`)
+    const eventSource = new EventSource(`${getApiBaseUrl()}/api/summarize/${videoId}/subscribe`)
     eventSourceRef.current = eventSource
 
     eventSource.onopen = () => {

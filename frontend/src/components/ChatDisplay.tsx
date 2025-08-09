@@ -44,7 +44,7 @@ export function ChatDisplay({ videoId }: ChatDisplayProps) {
   }
 
   return (
-    <div className="bg-card rounded-lg border border-border h-full flex flex-col">
+    <div className="bg-card rounded-lg border border-border h-full flex flex-col overflow-auto">
       <div className="flex items-center gap-2 p-4 border-b border-border flex-shrink-0">
         <MessageSquare className="h-5 w-5 text-muted-foreground" />
         <h2 className="text-xl font-semibold">Video Chat</h2>

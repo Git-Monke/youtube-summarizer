@@ -1,5 +1,4 @@
-// API base URL
-const API_BASE_URL = 'http://localhost:8008'
+import { API_BASE_URL } from '../config/api'
 
 // Video interfaces
 export interface Video {

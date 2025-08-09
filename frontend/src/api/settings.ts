@@ -1,5 +1,4 @@
-// API base URL - should match other API modules
-const API_BASE_URL = 'http://localhost:8008'
+import { API_BASE_URL } from '../config/api'
 
 // Server configuration interface
 export interface ServerConfig {

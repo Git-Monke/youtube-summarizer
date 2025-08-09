@@ -13,7 +13,7 @@ export function Layout({ children }: LayoutProps) {
   const [sidebarOpen] = useAtom(sidebarOpenAtom)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       <Header />
       <div className="flex">
         <Sidebar />

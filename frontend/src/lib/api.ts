@@ -1,5 +1,4 @@
-// API base URL - adjust based on your backend setup
-const API_BASE_URL = 'http://localhost:8008'
+import { API_BASE_URL } from '../config/api'
 
 export interface Video {
   video_id: string
