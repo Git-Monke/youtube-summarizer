@@ -2,7 +2,7 @@ services:
   frontend:
     image: gitmonke/youtube-summarizer-frontend:latest
     container_name: youtube-summarizer-frontend
-    ports: ["8009:80"]
+    ports: ["8009:8009"]
     depends_on: [backend]
     networks: [appnet]
 
