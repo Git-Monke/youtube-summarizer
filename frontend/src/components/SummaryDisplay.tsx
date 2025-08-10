@@ -32,7 +32,7 @@ const processTimestamps = (content: any): any => {
   return content;
 };
 
-function cleanMarkdown(input) {
+function cleanMarkdown(input: string) {
   return input.replace(/```markdown\s*([\s\S]*?)```/g, "$1");
 }
 
