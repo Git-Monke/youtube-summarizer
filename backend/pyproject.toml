@@ -16,6 +16,7 @@ dependencies = [
     "langchain (>=0.3.27,<0.4.0)",
     "ollama (>=0.5.1,<0.6.0)",
     "openai (>=1.99.1,<2.0.0)",
+    "torch (>=2.6.0,<3.0.0)",
 ]
 
 [tool.poetry]
@@ -24,6 +25,14 @@ packages = [{ include = "youtube_summarizer", from = "src" }]
 [tool.poetry.scripts]
 youtube-summarizer = "youtube_summarizer.__main__:main"
 
+[[tool.poetry.source]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+priority = "explicit"
+
+
+[tool.poetry.dependencies]
+torch = {source = "pytorch-cu124"}
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

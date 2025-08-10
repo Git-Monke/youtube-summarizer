@@ -22,11 +22,12 @@ from .summaryjobs import get_job
 
 # Use cuda by default, cpu otherwise
 device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
+print(f"For transcriptionm, using {device}")
 
 model = WhisperModel(
     DEFAULT_TRANS_MODEL,
     device=device,
-    compute_type=DEFAULT_TRANS_COMPUTE_TYPE,
+    compute_type="float32"
 )
 
 

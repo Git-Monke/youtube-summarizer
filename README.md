@@ -1,6 +1,7 @@
 # YouTube Summarizer
 
-A full-stack web application that automatically downloads, transcribes, and summarizes YouTube videos using various AI models.
+-- Reference for setting up gpu access for containerized backend
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html
 
 ## Architecture Overview
 

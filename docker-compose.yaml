@@ -8,11 +8,21 @@ services:
 
   backend:
     image: gitmonke/youtube-summarizer-backend:latest
+    runtime: nvidia
     container_name: youtube-summarizer-backend
     volumes:
       - backend-content:/app/content
     ports: ["8008:8008"]
     networks: [appnet]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 networks:
   appnet:
