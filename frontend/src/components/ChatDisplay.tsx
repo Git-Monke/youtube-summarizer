@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Loader2, AlertCircle, MessageSquare } from 'lucide-react'
 import { ChatMessage } from './ChatMessage'
+import { ThinkingMessage } from './ThinkingMessage'
 import { ChatInput } from './ChatInput'
 import { useChatStream } from '../hooks/useChatStream'
 
@@ -12,6 +13,7 @@ export function ChatDisplay({ videoId }: ChatDisplayProps) {
   const {
     messages,
     isLoading,
+    isThinking,
     isStreaming,
     streamingResponse,
     error,
@@ -24,7 +26,7 @@ export function ChatDisplay({ videoId }: ChatDisplayProps) {
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, streamingResponse])
+  }, [messages, streamingResponse, isThinking])
 
   if (isLoading) {
     return (
@@ -69,7 +71,7 @@ export function ChatDisplay({ videoId }: ChatDisplayProps) {
 
       {/* Messages Area */}
       <div className="flex-1 overflow-auto p-4 space-y-4 min-h-0">
-        {messages.length === 0 && !streamingResponse ? (
+        {messages.length === 0 && !streamingResponse && !isThinking ? (
           <div className="text-center text-muted-foreground py-8">
             <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p className="text-sm">Ask a question about this video to get started!</p>
@@ -81,6 +83,11 @@ export function ChatDisplay({ videoId }: ChatDisplayProps) {
             {messages.map((message, index) => (
               <ChatMessage key={index} message={message} />
             ))}
+
+            {/* Thinking state - show when waiting for response */}
+            {isThinking && (
+              <ThinkingMessage />
+            )}
 
             {/* Streaming response - only show if actively streaming */}
             {isStreaming && streamingResponse && (
@@ -98,8 +105,8 @@ export function ChatDisplay({ videoId }: ChatDisplayProps) {
       {/* Chat Input */}
       <ChatInput
         onSendMessage={askQuestion}
-        disabled={isLoading}
-        isStreaming={isStreaming}
+        disabled={isLoading || isThinking}
+        isStreaming={isStreaming || isThinking}
       />
     </div>
   )

@@ -1,4 +1,4 @@
-from faster_whisper import WhisperModel
+from faster_whisper import WhisperModel, format_timestamp
 from tinydb import Query
 import time
 import os
@@ -20,6 +20,8 @@ from .utils import get_file_path
 from .database import videos
 from .summaryjobs import get_job
 
+from faster_whisper import format_timestamp
+
 # Use cuda by default, cpu otherwise
 device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
 print(f"For transcriptionm, using {device}")
@@ -29,6 +31,27 @@ model = WhisperModel(
     device=device,
     compute_type="float32"
 )
+
+def format_timestamp(
+    seconds: float,
+    always_include_hours: bool = False,
+) -> str:
+    assert seconds >= 0, "non-negative timestamp expected"
+    milliseconds = round(seconds * 1000.0)
+
+    hours = milliseconds // 3_600_000
+    milliseconds -= hours * 3_600_000
+
+    minutes = milliseconds // 60_000
+    milliseconds -= minutes * 60_000
+
+    seconds = milliseconds // 1_000
+    milliseconds -= seconds * 1_000
+
+    hours_marker = f"{hours:02d}:" if always_include_hours or hours > 0 else ""
+    return (
+        f"{hours_marker}{minutes:02d}:{seconds:02d}"
+    )
 
 
 async def transcribe_audio(video_id: str):
@@ -68,6 +91,10 @@ async def transcribe_audio(video_id: str):
 
     # Update job status to transcribed on completion
     await job.update_status("transcribed", "Audio transcription completed")
+
+
+
+
 
 
 def transcribe_worker(queue, video_id):

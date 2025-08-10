@@ -4,6 +4,7 @@ import { type ChatMessage, fetchChatHistory, askChatQuestion, subscribeToChatStr
 interface UseChatStreamResult {
   messages: ChatMessage[]
   isLoading: boolean
+  isThinking: boolean
   isStreaming: boolean
   streamingResponse: string
   error: string | null
@@ -14,6 +15,7 @@ interface UseChatStreamResult {
 export function useChatStream(videoId: string): UseChatStreamResult {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isThinking, setIsThinking] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
   const [streamingResponse, setStreamingResponse] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -41,10 +43,11 @@ export function useChatStream(videoId: string): UseChatStreamResult {
 
   // Ask a question and start streaming
   const askQuestion = useCallback(async (question: string) => {
-    if (!question.trim() || isStreaming) return
+    if (!question.trim() || isStreaming || isThinking) return
 
     setError(null)
-    setIsStreaming(true)
+    setIsThinking(true)
+    setIsStreaming(false)
     setStreamingResponse('')
 
     // Add user message immediately for visual feedback
@@ -66,10 +69,16 @@ export function useChatStream(videoId: string): UseChatStreamResult {
 
       eventSource.onopen = () => {
         console.log('Chat stream connected')
+        setIsThinking(false)
+        setIsStreaming(true)
       }
 
       eventSource.addEventListener('token', (event) => {
         console.log('Received token event:', event.data)
+        
+        // Ensure we're in streaming mode (fallback if onopen didn't fire)
+        setIsThinking(false)
+        setIsStreaming(true)
         
         try {
           const token = JSON.parse(event.data)
@@ -84,6 +93,7 @@ export function useChatStream(videoId: string): UseChatStreamResult {
 
       eventSource.addEventListener('complete', () => {
         setStreamingResponse(currentResponse => {
+          setIsThinking(false)
           setIsStreaming(false)
           
           const assistantMessage: ChatMessage = { role: 'assistant', content: currentResponse }
@@ -106,6 +116,7 @@ export function useChatStream(videoId: string): UseChatStreamResult {
         } catch {
           setError('An error occurred during streaming')
         }
+        setIsThinking(false)
         setIsStreaming(false)
         setStreamingResponse('')
         eventSource.close()
@@ -114,6 +125,7 @@ export function useChatStream(videoId: string): UseChatStreamResult {
       eventSource.onerror = (event) => {
         console.error('EventSource failed:', event)
         setError('Connection to chat stream failed')
+        setIsThinking(false)
         setIsStreaming(false)
         setStreamingResponse('')
         eventSource.close()
@@ -121,10 +133,11 @@ export function useChatStream(videoId: string): UseChatStreamResult {
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to ask question')
+      setIsThinking(false)
       setIsStreaming(false)
       setStreamingResponse('')
     }
-  }, [videoId, isStreaming])
+  }, [videoId, isStreaming, isThinking])
 
   // Clear error
   const clearError = useCallback(() => {
@@ -134,6 +147,7 @@ export function useChatStream(videoId: string): UseChatStreamResult {
   return {
     messages,
     isLoading,
+    isThinking,
     isStreaming,
     streamingResponse,
     error,

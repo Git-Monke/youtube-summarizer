@@ -51,6 +51,27 @@ def save_chat_history(video_id: str, messages: List[Dict[str, str]]):
     except Exception as e:
         logger.error(f"Failed to save chat history for {video_id}: {e}")
 
+def format_timestamp(
+    seconds: float,
+    always_include_hours: bool = False,
+) -> str:
+    assert seconds >= 0, "non-negative timestamp expected"
+    milliseconds = round(seconds * 1000.0)
+
+    hours = milliseconds // 3_600_000
+    milliseconds -= hours * 3_600_000
+
+    minutes = milliseconds // 60_000
+    milliseconds -= minutes * 60_000
+
+    seconds = milliseconds // 1_000
+    milliseconds -= seconds * 1_000
+
+    hours_marker = f"{hours:02d}:" if always_include_hours or hours > 0 else ""
+    return (
+        f"{hours_marker}{minutes:02d}:{seconds:02d}"
+    )
+
 
 def load_video_transcript(video_id: str) -> str:
     """Load the video transcript to use as context."""
@@ -63,7 +84,7 @@ def load_video_transcript(video_id: str) -> str:
         with open(transcript_file, 'r', encoding='utf-8') as f:
             transcript_data = json.load(f)
             # Combine all transcript segments into one text
-            return " ".join([segment['text'] for segment in transcript_data])
+            return " ".join([format_timestamp(segment['start']) + segment['text'] for segment in transcript_data])
     except Exception as e:
         logger.error(f"Failed to load transcript for {video_id}: {e}")
         return ""
@@ -82,6 +103,7 @@ Video Transcript:
 {transcript}
 
 Please answer the user's question based on the information in the transcript. If the transcript doesn't contain relevant information, say so politely.
+If you plan on using a video timestamp in your response, format it using [MM:SS] format or [H:MM:SS] format if applicable. The brackets are NECESSARY for later displaying of the timestamp 
 
 Chat History:
 """

@@ -1,37 +1,11 @@
 import { User, Bot } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
-import { Clock } from 'lucide-react'
 import { type ChatMessage as ChatMessageType } from '../api/videos'
+import { CustomMarkdown } from './ui/CustomMarkdown'
 
 interface ChatMessageProps {
   message: ChatMessageType
   isStreaming?: boolean
 }
-
-// Utility function to process timestamps in content (reuse from SummaryDisplay)
-const processTimestamps = (content: any): any => {
-  if (typeof content === 'string') {
-    const timestampRegex = /\[(\d+:\d+)\]/g;
-    const parts = content.split(timestampRegex);
-    
-    return parts.map((part, index) => {
-      if (index % 2 === 1) {
-        // This is a timestamp - match the TranscriptDisplay styling
-        return (
-          <span
-            key={index}
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground mx-1"
-          >
-            <Clock className="h-3 w-3" />
-            <span className="font-mono">{part}</span>
-          </span>
-        );
-      }
-      return part;
-    });
-  }
-  return content;
-};
 
 export function ChatMessage({ message, isStreaming = false }: ChatMessageProps) {
   const isUser = message.role === 'user'
@@ -55,48 +29,7 @@ export function ChatMessage({ message, isStreaming = false }: ChatMessageProps) 
           {isUser ? (
             <p className="text-sm">{message.content}</p>
           ) : (
-            <div className="prose prose-sm max-w-none text-inherit">
-              <ReactMarkdown
-                components={{
-                  // Style paragraphs with timestamp support
-                  p: ({ children }) => (
-                    <p className="mb-2 last:mb-0">
-                      {Array.isArray(children) 
-                        ? children.map(child => processTimestamps(child))
-                        : processTimestamps(children)}
-                    </p>
-                  ),
-                  // Style list items with timestamp support
-                  li: ({ children }) => (
-                    <li className="mb-1">
-                      {Array.isArray(children) 
-                        ? children.map(child => processTimestamps(child))
-                        : processTimestamps(children)}
-                    </li>
-                  ),
-                  // Style H2 headers
-                  h2: ({ children }) => (
-                    <h2 className="text-base font-semibold mb-2 mt-3 pb-1 border-b border-border/20">
-                      {children}
-                    </h2>
-                  ),
-                  // Style unordered lists
-                  ul: ({ children }) => (
-                    <ul className="space-y-1 mb-2 list-disc list-outside ml-4">
-                      {children}
-                    </ul>
-                  ),
-                  // Style ordered lists
-                  ol: ({ children }) => (
-                    <ol className="space-y-1 mb-2 list-decimal list-outside ml-4">
-                      {children}
-                    </ol>
-                  ),
-                }}
-              >
-                {message.content}
-              </ReactMarkdown>
-            </div>
+            <CustomMarkdown content={message.content} variant="compact" />
           )}
         </div>
         

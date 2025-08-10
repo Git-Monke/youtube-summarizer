@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { AlertCircle, Loader2, ArrowLeft, MoreVertical, Trash2, FileText, MessageSquare } from 'lucide-react'
+import { AlertCircle, Loader2, ArrowLeft, MoreVertical, Trash2, FileText, MessageSquare, Maximize2, Minimize2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useSSEJobStatus } from '../hooks/useSSEJobStatus'
 import { ProcessingView } from '../components/ProcessingView'
@@ -34,7 +34,11 @@ export function VideoDetailPage() {
   const { jobStatus, jobState, loading, error, connectionStatus, refetch } = useSSEJobStatus(videoId)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [expandedPanel, setExpandedPanel] = useState<'none' | 'left' | 'right'>('none')
 
+  const togglePanelExpansion = (panel: 'left' | 'right') => {
+    setExpandedPanel(expandedPanel === panel ? 'none' : panel)
+  }
 
   const handleDelete = async () => {
     if (!videoId) return
@@ -140,7 +144,7 @@ export function VideoDetailPage() {
   // If we're processing but have video metadata, show it with processing view
   if (video && jobStatus.status === 'in_progress') {
     return (
-      <div className="py-8">
+      <div className="">
         <button
           onClick={() => navigate('/')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
@@ -187,7 +191,7 @@ export function VideoDetailPage() {
   }
 
   return (
-    <div className="py-8">
+    <div className="">
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate('/')}
@@ -218,9 +222,28 @@ export function VideoDetailPage() {
       <VideoHeader video={video} />
 
       {jobStatus.status === 'completed' ? (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 h-[200vh] xl:h-[80vh]">
+        <div className={`grid mb-4 gap-6 h-[200vh] xl:h-[80vh] transition-all duration-300 ${
+          expandedPanel === 'none' 
+            ? 'grid-cols-1 xl:grid-cols-2' 
+            : 'grid-cols-1'
+        }`}>
           {/* Left Column - Summary/Transcript Tabs */}
-          <div className="h-full flex flex-col min-h-0">
+          <div className={`h-full flex flex-col min-h-0 ${expandedPanel === 'right' ? 'hidden xl:hidden' : ''}`}>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold">Content</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => togglePanelExpansion('left')}
+                className="h-8 w-8 p-0"
+              >
+                {expandedPanel === 'left' ? (
+                  <Minimize2 className="h-4 w-4" />
+                ) : (
+                  <Maximize2 className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
             <Tabs defaultValue="summary" className="h-full flex flex-col min-h-0">
               <TabsList className="grid w-full grid-cols-2 flex-shrink-0">
                 <TabsTrigger value="summary" className="flex items-center gap-2">
@@ -242,8 +265,25 @@ export function VideoDetailPage() {
           </div>
 
           {/* Right Column - Chat Interface */}
-          <div className="h-full min-h-0">
-            <ChatDisplay videoId={videoId!} />
+          <div className={`h-full flex flex-col min-h-0 ${expandedPanel === 'left' ? 'hidden xl:hidden' : ''}`}>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold">Chat</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => togglePanelExpansion('right')}
+                className="h-8 w-8 p-0"
+              >
+                {expandedPanel === 'right' ? (
+                  <Minimize2 className="h-4 w-4" />
+                ) : (
+                  <Maximize2 className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+            <div className="flex-1 min-h-0">
+              <ChatDisplay videoId={videoId!} />
+            </div>
           </div>
         </div>
       ) : (
